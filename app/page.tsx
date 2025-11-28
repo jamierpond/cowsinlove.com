@@ -110,7 +110,7 @@ export default function Home() {
           left: 50%;
           transform: translate(-50%, -50%);
           font-family: ${FONT_FAMILY};
-          font-size: clamp(2.5rem, 12vw, 8rem);
+          font-size: clamp(2rem, 10vw, 8rem);
           font-weight: bold;
           color: ${COLORS.hotPink};
           text-shadow:
@@ -125,7 +125,14 @@ export default function Home() {
           animation: throb 3s ease-in-out infinite;
           text-align: center;
           line-height: 1.2;
-          white-space: nowrap;
+          padding: 0 1rem;
+          max-width: 95vw;
+        }
+
+        @media (min-width: 769px) {
+          .title {
+            white-space: nowrap;
+          }
         }
 
         @media (max-width: 768px) {
