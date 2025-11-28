@@ -102,6 +102,64 @@ export default function Home() {
           background: radial-gradient(circle at 50% 50%, rgba(255, 182, 193, 0.15) 0%, transparent 70%);
           animation: throb 3s ease-in-out infinite;
         }
+
+        .title {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          font-family: 'Comic Sans MS', 'Comic Sans', cursive;
+          font-size: clamp(2.5rem, 12vw, 8rem);
+          font-weight: bold;
+          color: #ff69b4;
+          text-shadow:
+            0 0 20px rgba(255, 255, 255, 0.8),
+            0 0 40px rgba(255, 105, 180, 0.6),
+            4px 4px 0px #fff,
+            -4px -4px 0px #fff,
+            4px -4px 0px #fff,
+            -4px 4px 0px #fff;
+          z-index: 15;
+          pointer-events: none;
+          animation: throb 3s ease-in-out infinite;
+          text-align: center;
+          line-height: 1.2;
+          padding: 0 1rem;
+          width: 100%;
+          max-width: 90vw;
+        }
+
+        @media (max-width: 768px) {
+          .title {
+            text-shadow:
+              0 0 15px rgba(255, 255, 255, 0.8),
+              0 0 30px rgba(255, 105, 180, 0.6),
+              2px 2px 0px #fff,
+              -2px -2px 0px #fff,
+              2px -2px 0px #fff,
+              -2px 2px 0px #fff;
+          }
+
+          .floating-emoji {
+            font-size: 2rem !important;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .title {
+            text-shadow:
+              0 0 10px rgba(255, 255, 255, 0.8),
+              0 0 20px rgba(255, 105, 180, 0.6),
+              1px 1px 0px #fff,
+              -1px -1px 0px #fff,
+              1px -1px 0px #fff,
+              -1px 1px 0px #fff;
+          }
+
+          .floating-emoji {
+            font-size: 1.5rem !important;
+          }
+        }
       `}</style>
 
       <div className="relative w-screen h-screen">
@@ -115,6 +173,7 @@ export default function Home() {
 
         <div className="pink-overlay" />
         <div className="vignette" />
+        <div className="title">cows in love</div>
 
         {floatingEmojis.map((item, index) => (
           <div
