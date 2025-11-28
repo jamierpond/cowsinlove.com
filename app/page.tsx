@@ -1,6 +1,6 @@
 "use client";
 import Image from 'next/image'
-import Cows from '../public/cows.webp'
+import Cows from '../public/cows.jpg'
 import { SITE_TITLE, COLORS, FONT_FAMILY } from '@/lib/constants'
 
 export default function Home() {

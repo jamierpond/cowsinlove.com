@@ -21,7 +21,7 @@ export async function GET(request: Request) {
       >
         {/* Background image */}
         <img
-          src={`${origin}/cows.png`}
+          src={`${origin}/cows.jpg`}
           width={OG_IMAGE_SIZE.width}
           height={OG_IMAGE_SIZE.height}
           style={{
