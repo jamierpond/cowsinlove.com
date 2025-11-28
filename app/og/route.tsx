@@ -1,11 +1,9 @@
 import { ImageResponse } from 'next/og';
 import { SITE_TITLE, COLORS, OG_IMAGE_SIZE } from '@/lib/constants';
 
-export const alt = SITE_TITLE;
-export const size = OG_IMAGE_SIZE;
-export const contentType = 'image/png';
+export const runtime = 'edge';
 
-export async function OgImage() {
+export async function GET() {
   return new ImageResponse(
     (
       <div
@@ -121,12 +119,7 @@ export async function OgImage() {
       </div>
     ),
     {
-      ...size,
+      ...OG_IMAGE_SIZE,
     }
   );
 }
-
-export default function GET() {
-  return OgImage();
-}
-
