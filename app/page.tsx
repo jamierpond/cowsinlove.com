@@ -1,6 +1,7 @@
 "use client";
 import Image from 'next/image'
 import Cows from '../public/cows.webp'
+import { SITE_TITLE, COLORS, FONT_FAMILY } from '@/lib/constants'
 
 export default function Home() {
   const floatingEmojis = [
@@ -37,7 +38,7 @@ export default function Home() {
   ];
 
   return (
-    <main className="flex h-screen items-center justify-center bg-black overflow-hidden">
+    <main className="flex h-screen items-center justify-center overflow-hidden" style={{ backgroundColor: COLORS.black }}>
       <style jsx>{`
         @keyframes float {
           0% {
@@ -69,10 +70,10 @@ export default function Home() {
 
         @keyframes pulse {
           0%, 100% {
-            box-shadow: inset 0 0 200px 100px rgba(255, 105, 180, 0.4);
+            box-shadow: inset 0 0 200px 100px ${COLORS.hotPink}66;
           }
           50% {
-            box-shadow: inset 0 0 300px 150px rgba(255, 20, 147, 0.7);
+            box-shadow: inset 0 0 300px 150px ${COLORS.deepPink}b3;
           }
         }
 
@@ -82,7 +83,7 @@ export default function Home() {
           animation: float linear infinite;
           pointer-events: none;
           z-index: 10;
-          filter: drop-shadow(0 0 10px rgba(255, 105, 180, 0.8));
+          filter: drop-shadow(0 0 10px ${COLORS.pinkGlow});
         }
 
         .vignette {
@@ -91,7 +92,7 @@ export default function Home() {
           pointer-events: none;
           z-index: 20;
           animation: pulse 2s ease-in-out infinite;
-          background: radial-gradient(ellipse at center, transparent 0%, transparent 40%, rgba(255, 105, 180, 0.3) 100%);
+          background: radial-gradient(ellipse at center, transparent 0%, transparent 40%, ${COLORS.hotPink}4d 100%);
         }
 
         .pink-overlay {
@@ -99,7 +100,7 @@ export default function Home() {
           inset: 0;
           pointer-events: none;
           z-index: 5;
-          background: radial-gradient(circle at 50% 50%, rgba(255, 182, 193, 0.15) 0%, transparent 70%);
+          background: radial-gradient(circle at 50% 50%, ${COLORS.lightPink} 0%, transparent 70%);
           animation: throb 3s ease-in-out infinite;
         }
 
@@ -108,17 +109,17 @@ export default function Home() {
           top: 50%;
           left: 50%;
           transform: translate(-50%, -50%);
-          font-family: 'Comic Sans MS', 'Comic Sans', cursive;
+          font-family: ${FONT_FAMILY};
           font-size: clamp(2.5rem, 12vw, 8rem);
           font-weight: bold;
-          color: #ff69b4;
+          color: ${COLORS.hotPink};
           text-shadow:
-            0 0 20px rgba(255, 255, 255, 0.8),
-            0 0 40px rgba(255, 105, 180, 0.6),
-            4px 4px 0px #fff,
-            -4px -4px 0px #fff,
-            4px -4px 0px #fff,
-            -4px 4px 0px #fff;
+            0 0 20px ${COLORS.white}cc,
+            0 0 40px ${COLORS.hotPink}99,
+            4px 4px 0px ${COLORS.white},
+            -4px -4px 0px ${COLORS.white},
+            4px -4px 0px ${COLORS.white},
+            -4px 4px 0px ${COLORS.white};
           z-index: 15;
           pointer-events: none;
           animation: throb 3s ease-in-out infinite;
@@ -130,12 +131,12 @@ export default function Home() {
         @media (max-width: 768px) {
           .title {
             text-shadow:
-              0 0 15px rgba(255, 255, 255, 0.8),
-              0 0 30px rgba(255, 105, 180, 0.6),
-              2px 2px 0px #fff,
-              -2px -2px 0px #fff,
-              2px -2px 0px #fff,
-              -2px 2px 0px #fff;
+              0 0 15px ${COLORS.white}cc,
+              0 0 30px ${COLORS.hotPink}99,
+              2px 2px 0px ${COLORS.white},
+              -2px -2px 0px ${COLORS.white},
+              2px -2px 0px ${COLORS.white},
+              -2px 2px 0px ${COLORS.white};
           }
 
           .floating-emoji {
@@ -146,12 +147,12 @@ export default function Home() {
         @media (max-width: 480px) {
           .title {
             text-shadow:
-              0 0 10px rgba(255, 255, 255, 0.8),
-              0 0 20px rgba(255, 105, 180, 0.6),
-              1px 1px 0px #fff,
-              -1px -1px 0px #fff,
-              1px -1px 0px #fff,
-              -1px 1px 0px #fff;
+              0 0 10px ${COLORS.white}cc,
+              0 0 20px ${COLORS.hotPink}99,
+              1px 1px 0px ${COLORS.white},
+              -1px -1px 0px ${COLORS.white},
+              1px -1px 0px ${COLORS.white},
+              -1px 1px 0px ${COLORS.white};
           }
 
           .floating-emoji {
@@ -171,7 +172,7 @@ export default function Home() {
 
         <div className="pink-overlay" />
         <div className="vignette" />
-        <div className="title">cows in love</div>
+        <div className="title">{SITE_TITLE}</div>
 
         {floatingEmojis.map((item, index) => (
           <div
