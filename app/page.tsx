@@ -60,11 +60,11 @@ export default function Home() {
         @keyframes throb {
           0%, 100% {
             opacity: 0.6;
-            transform: scale(1);
+            transform: translate(-50%, -50%) scale(1);
           }
           50% {
             opacity: 0.9;
-            transform: scale(1.05);
+            transform: translate(-50%, -50%) scale(1.05);
           }
         }
 
@@ -127,13 +127,9 @@ export default function Home() {
           line-height: 1.2;
           padding: 0 1rem;
           max-width: 95vw;
+          white-space: nowrap;
         }
 
-        @media (min-width: 769px) {
-          .title {
-            white-space: nowrap;
-          }
-        }
 
         @media (max-width: 768px) {
           .title {
