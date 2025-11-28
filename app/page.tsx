@@ -124,9 +124,7 @@ export default function Home() {
           animation: throb 3s ease-in-out infinite;
           text-align: center;
           line-height: 1.2;
-          padding: 0 1rem;
-          width: 100%;
-          max-width: 90vw;
+          white-space: nowrap;
         }
 
         @media (max-width: 768px) {
