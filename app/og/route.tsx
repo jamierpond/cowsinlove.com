@@ -3,7 +3,9 @@ import { SITE_TITLE, COLORS, OG_IMAGE_SIZE } from '@/lib/constants';
 
 export const runtime = 'edge';
 
-export async function GET() {
+export async function GET(request: Request) {
+  const { origin } = new URL(request.url);
+
   return new ImageResponse(
     (
       <div
@@ -17,6 +19,29 @@ export async function GET() {
           position: 'relative',
         }}
       >
+        {/* Background image */}
+        <img
+          src={`${origin}/cows.png`}
+          width={OG_IMAGE_SIZE.width}
+          height={OG_IMAGE_SIZE.height}
+          style={{
+            position: 'absolute',
+            width: '100%',
+            height: '100%',
+            objectFit: 'contain',
+          }}
+        />
+
+        {/* Dark overlay for text readability */}
+        <div
+          style={{
+            position: 'absolute',
+            width: '100%',
+            height: '100%',
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          }}
+        />
+
         {/* Background decorative emojis */}
         <div
           style={{
