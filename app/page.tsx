@@ -1,7 +1,12 @@
-"use client";
+'use client';
 import Image from 'next/image'
 import Cows from '../public/cows.jpg'
 import { SITE_TITLE, COLORS, FONT_FAMILY } from '@/lib/constants'
+const IMAGE_PREVIEW = "data:image/jpeg;base64,/9j/2wBDABALDA4MChAODQ4SERATGCgaGBYWGDEjJR0oOjM9PDkzODdASFxOQERXRTc4UG1RV19iZ2hnPk1xeXBkeFxlZ2P/2wBDARESEhgVGC8aGi9jQjhCY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2P/wAARCAAUAA8DASIAAhEBAxEB/8QAFwAAAwEAAAAAAAAAAAAAAAAAAAMFBP/EAB8QAAICAQQDAAAAAAAAAAAAAAECAAMEBREhIjFBQv/EABQBAQAAAAAAAAAAAAAAAAAAAAT/xAAYEQADAQEAAAAAAAAAAAAAAAAAAQMhYf/aAAwDAQACEQMRAD8AmC8vlMu/mKyiyP2G0w4mbSA19tncfI9xOdqT3FdzCKIx33hLjV5HMIRTBn//2Q==";
+
+// force static
+export const dynamic = 'force-static';
+
 
 const FLOATING_EMOJI = [
   { emoji: '❤️', delay: 0, duration: 8, left: '10%', size: '3rem' },
@@ -167,6 +172,8 @@ export default function Home() {
 
       <div className="relative w-screen h-screen">
         <Image
+          placeholder="blur"
+          blurDataURL={IMAGE_PREVIEW}
           src={Cows}
           alt="Cows In Love"
           className="object-contain"
