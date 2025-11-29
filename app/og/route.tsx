@@ -70,33 +70,41 @@ export async function getOgImage(origin: string = 'https://cowsinlove.com') {
         <div
           style={{
             display: 'flex',
-            flexDirection: 'column',
+            flexDirection: 'row',
             alignItems: 'center',
             justifyContent: 'center',
             textAlign: 'center',
             zIndex: 10,
           }}
         >
-          <div
-            style={{
-              fontSize: '140px',
-              fontWeight: 'bold',
-              color: COLORS.hotPink,
-              fontFamily: '"Comic Neue"',
-              textShadow: `
-                0 0 40px ${COLORS.white}ff,
-                0 0 80px ${COLORS.hotPink}ff,
-                0 0 120px ${COLORS.hotPink}cc,
-                4px 4px 0px ${COLORS.white},
-                -4px -4px 0px ${COLORS.white},
-                4px -4px 0px ${COLORS.white},
-                -4px 4px 0px ${COLORS.white},
-                8px 8px 0px ${COLORS.white}aa
-              `,
-            }}
-          >
-            {SITE_TITLE}
-          </div>
+          {SITE_TITLE.split('').map((char, index) => {
+            const wave = Math.sin(index * 0.5) * 15;
+            return (
+              <div
+                key={index}
+                style={{
+                  fontSize: '140px',
+                  fontWeight: 'bold',
+                  color: COLORS.hotPink,
+                  fontFamily: '"Comic Neue"',
+                  textShadow: `
+                    0 0 40px ${COLORS.white}ff,
+                    0 0 80px ${COLORS.hotPink}ff,
+                    0 0 120px ${COLORS.hotPink}cc,
+                    4px 4px 0px ${COLORS.white},
+                    -4px -4px 0px ${COLORS.white},
+                    4px -4px 0px ${COLORS.white},
+                    -4px 4px 0px ${COLORS.white},
+                    8px 8px 0px ${COLORS.white}aa
+                  `,
+                  transform: `translateY(${wave}px) rotate(${wave * 0.3}deg)`,
+                  display: 'flex',
+                }}
+              >
+                {char === ' ' ? '\u00A0' : char}
+              </div>
+            );
+          })}
         </div>
       </div>
     ),
