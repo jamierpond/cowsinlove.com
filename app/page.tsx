@@ -1,4 +1,4 @@
-'use client';
+"use client";
 import Image from 'next/image'
 import Cows from '../public/cows.jpg'
 import { SITE_TITLE, COLORS, FONT_FAMILY } from '@/lib/constants'
@@ -110,6 +110,12 @@ export default function Home() {
           animation: throb 3s ease-in-out infinite;
         }
 
+        .blur-background {
+          filter: blur(40px);
+          opacity: 0.6;
+          z-index: 0;
+        }
+
         .title {
           position: absolute;
           top: 50%;
@@ -171,6 +177,13 @@ export default function Home() {
       `}</style>
 
       <div className="relative w-screen h-screen">
+        <Image
+          src={IMAGE_PREVIEW}
+          alt=""
+          className="object-cover blur-background"
+          fill
+          unoptimized
+        />
         <Image
           placeholder="blur"
           blurDataURL={IMAGE_PREVIEW}
