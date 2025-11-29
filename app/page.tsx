@@ -1,20 +1,42 @@
-"use server";
+"use client";
+import { useState } from 'react';
 import Image from 'next/image';
 import Cows from '../public/cows.jpg';
+import VideoFrame from '../public/frame.jpg';
 import { SITE_TITLE, COLORS, FONT_FAMILY, IMAGE_PREVIEW } from '@/lib/constants';
 import InteractiveContent from './interactive-content';
 
-export default async function Home() {
+export default function Home() {
+  const [isVideoReady, setIsVideoReady] = useState(false);
+
   return (
     <main>
       <div className="background">
+        {/* Background elements first */}
         <Image
-          src={IMAGE_PREVIEW}
-          alt=""
-          className="object-cover blur-background"
+          src={VideoFrame}
+          alt="Cows in love placeholder"
           fill
-          unoptimized
+          priority
+          placeholder="blur"
+          className={`object-cover transition-opacity duration-1000 ${isVideoReady ? 'opacity-0' : 'opacity-100'}`}
         />
+        <video
+          src="/out.webm"
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="object-cover"
+          onPlaying={() => setIsVideoReady(true)}
+          style={{
+            width: '100%',
+            height: '100%',
+            position: 'absolute',
+          }}
+        />
+
+        {/* Foreground image */}
         <Image
           placeholder="blur"
           blurDataURL={IMAGE_PREVIEW}
@@ -24,7 +46,8 @@ export default async function Home() {
           fill
           priority
         />
-
+        
+        {/* Overlays and text, respecting CSS z-index */}
         <div className="pink-overlay" />
         <div className="vignette" />
 

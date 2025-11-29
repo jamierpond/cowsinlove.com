@@ -181,7 +181,7 @@ body {
 
 .blur-background {
   filter: blur(40px);
-  opacity: 0.6;
+  opacity: 0.3;
   z-index: 0;
 }
 
