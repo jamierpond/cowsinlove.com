@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { FLOATING_EMOJI } from './emoji';
 
 export default function InteractiveContent() {
@@ -8,16 +8,16 @@ export default function InteractiveContent() {
     { x: number; y: number; id: number; emoji: string; dx: number; dy: number; floatUp: number; rotation: number; duration: number }[]
   >([]);
   const audioRef = useRef<HTMLAudioElement>(null);
-
-  useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.play().catch(err => {
-        console.log('Audio autoplay failed:', err);
-      });
-    }
-  }, []);
+  const [audioStarted, setAudioStarted] = useState(false);
 
   const handleClick = (e: React.MouseEvent) => {
+    if (!audioStarted && audioRef.current) {
+      audioRef.current.play().catch(err => {
+        console.log('Audio play failed:', err);
+      });
+      setAudioStarted(true);
+    }
+
     const rect = e.currentTarget.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
@@ -54,6 +54,23 @@ export default function InteractiveContent() {
   return (
     <>
       <audio ref={audioRef} src="/milkshake.mp3" loop />
+
+      {!audioStarted && (
+        <div
+          style={{
+            position: 'fixed',
+            top: '70%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            fontSize: '4rem',
+            zIndex: 200,
+            pointerEvents: 'none',
+            animation: 'bounce 0.6s ease-in-out infinite',
+          }}
+        >
+          👆🐄
+        </div>
+      )}
 
       <div
         className="container"
