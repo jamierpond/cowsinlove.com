@@ -51,6 +51,13 @@ export default function Home() {
     >
       <div className="relative w-screen h-screen">
         <Image
+          src={IMAGE_PREVIEW}
+          alt=""
+          className="object-cover blur-background"
+          fill
+          unoptimized
+        />
+        <Image
           placeholder="blur"
           blurDataURL={IMAGE_PREVIEW}
           src={Cows}
