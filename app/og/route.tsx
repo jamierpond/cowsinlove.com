@@ -3,7 +3,11 @@ import { SITE_TITLE, COLORS, OG_IMAGE_SIZE } from '@/lib/constants';
 
 export const runtime = 'edge';
 
-export function getOgImage(origin: string = 'https://cowsinlove.com') {
+export async function getOgImage(origin: string = 'https://cowsinlove.com') {
+  const fontData = await fetch(
+    new URL('../../public/ComicNeue-Bold.ttf', import.meta.url)
+  ).then((res) => res.arrayBuffer());
+
   return new ImageResponse(
     (
       <div
@@ -78,14 +82,16 @@ export function getOgImage(origin: string = 'https://cowsinlove.com') {
               fontSize: '140px',
               fontWeight: 'bold',
               color: COLORS.hotPink,
-              fontFamily: 'Comic Neue, Comic Sans MS, cursive',
+              fontFamily: '"Comic Neue"',
               textShadow: `
-                0 0 20px ${COLORS.white}cc,
-                0 0 40px ${COLORS.hotPink}99,
-                0.125rem 0.125rem 0px ${COLORS.white},
-                -0.125rem -0.125rem 0px ${COLORS.white},
-                0.125rem -0.125rem 0px ${COLORS.white},
-                -0.125rem 0.125rem 0px ${COLORS.white}
+                0 0 40px ${COLORS.white}ff,
+                0 0 80px ${COLORS.hotPink}ff,
+                0 0 120px ${COLORS.hotPink}cc,
+                4px 4px 0px ${COLORS.white},
+                -4px -4px 0px ${COLORS.white},
+                4px -4px 0px ${COLORS.white},
+                -4px 4px 0px ${COLORS.white},
+                8px 8px 0px ${COLORS.white}aa
               `,
             }}
           >
@@ -96,6 +102,14 @@ export function getOgImage(origin: string = 'https://cowsinlove.com') {
     ),
     {
       ...OG_IMAGE_SIZE,
+      fonts: [
+        {
+          name: 'Comic Neue',
+          data: fontData,
+          style: 'normal',
+          weight: 700,
+        },
+      ],
     }
   );
 }
