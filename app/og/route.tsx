@@ -1,12 +1,12 @@
 import { ImageResponse } from 'next/og';
 import { SITE_TITLE, COLORS, OG_IMAGE_SIZE } from '@/lib/constants';
-
-export const runtime = 'edge';
+import fs from 'fs/promises';
+import path from 'path';
 
 export async function getOgImage(origin: string = 'https://cowsinlove.com') {
-  const fontData = await fetch(
-    new URL('../../public/ComicNeue-Bold.ttf', import.meta.url)
-  ).then((res) => res.arrayBuffer());
+  const fontData = await fs.readFile(
+    path.join(process.cwd(), 'public', 'ComicNeue-Bold.ttf')
+  );
 
   return new ImageResponse(
     (
