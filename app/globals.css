@@ -24,3 +24,109 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+@keyframes float {
+  0% {
+    transform: translateY(100vh) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-100px) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+@keyframes throb {
+  0%, 100% {
+    opacity: 0.6;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    opacity: 0.9;
+    transform: translate(-50%, -50%) scale(1.05);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    box-shadow: inset 0 0 200px 100px rgba(255, 105, 180, 0.4); /* hotPink66-ish */
+  }
+  50% {
+    box-shadow: inset 0 0 300px 150px rgba(255, 20, 147, 0.7);  /* deepPinkb3-ish */
+  }
+}
+
+/* utility-ish classes that mirror your old styled-jsx */
+
+.floating-emoji {
+  position: absolute;
+  top: 0;
+  pointer-events: none;
+  z-index: 10;
+  filter: drop-shadow(0 0 10px rgba(255, 182, 193, 0.9)); /* pinkGlow */
+  animation-name: float;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+.vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 20;
+  animation: pulse 2s ease-in-out infinite;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 0%,
+    transparent 40%,
+    rgba(255, 105, 180, 0.3) 100%
+  );
+}
+
+.pink-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 5;
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(255, 182, 193, 1) 0%,
+    transparent 70%
+  );
+  animation: throb 3s ease-in-out infinite;
+}
+
+.title {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-weight: bold;
+  text-align: center;
+  line-height: 1.2;
+  padding: 0 1rem;
+  max-width: 95vw;
+  white-space: nowrap;
+  z-index: 15;
+  pointer-events: none;
+  animation: throb 3s ease-in-out infinite;
+}
+
+@media (max-width: 768px) {
+  .floating-emoji {
+    font-size: 2rem !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .floating-emoji {
+    font-size: 1.5rem !important;
+  }
+}
+

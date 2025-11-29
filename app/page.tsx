@@ -1,12 +1,14 @@
-"use client";
-import Image from 'next/image'
-import Cows from '../public/cows.jpg'
-import { SITE_TITLE, COLORS, FONT_FAMILY } from '@/lib/constants'
-const IMAGE_PREVIEW = "data:image/jpeg;base64,/9j/2wBDABALDA4MChAODQ4SERATGCgaGBYWGDEjJR0oOjM9PDkzODdASFxOQERXRTc4UG1RV19iZ2hnPk1xeXBkeFxlZ2P/2wBDARESEhgVGC8aGi9jQjhCY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2P/wAARCAAUAA8DASIAAhEBAxEB/8QAFwAAAwEAAAAAAAAAAAAAAAAAAAMFBP/EAB8QAAICAQQDAAAAAAAAAAAAAAECAAMEBREhIjFBQv/EABQBAQAAAAAAAAAAAAAAAAAAAAT/xAAYEQADAQEAAAAAAAAAAAAAAAAAAQMhYf/aAAwDAQACEQMRAD8AmC8vlMu/mKyiyP2G0w4mbSA19tncfI9xOdqT3FdzCKIx33hLjV5HMIRTBn//2Q==";
+// app/page.tsx
+
+import Image from 'next/image';
+import Cows from '../public/cows.jpg';
+import { SITE_TITLE, COLORS, FONT_FAMILY } from '@/lib/constants';
+
+const IMAGE_PREVIEW =
+  "data:image/jpeg;base64,/9j/2wBDABALDA4MChAODQ4SERATGCgaGBYWGDEjJR0oOjM9PDkzODdASFxOQERXRTc4UG1RV19iZ2hnPk1xeXBkeFxlZ2P/2wBDARESEhgVGC8aGi9jQjhCY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2P/wAARCAAUAA8DASIAAhEBAxEB/8QAFwAAAwEAAAAAAAAAAAAAAAAAAAMFBP/EAB8QAAICAQQDAAAAAAAAAAAAAAECAAMEBREhIjFBQv/EABQBAQAAAAAAAAAAAAAAAAAAAAT/xAAYEQADAQEAAAAAAAAAAAAAAAAAAQMhYf/aAAwDAQACEQMRAD8AmC8vlMu/mKyiyP2G0w4mbSA19tncfI9xOdqT3FdzCKIx33hLjV5HMIRTBn//2Q==";
 
 // force static
 export const dynamic = 'force-static';
-
 
 const FLOATING_EMOJI = [
   { emoji: '❤️', delay: 0, duration: 8, left: '10%', size: '3rem' },
@@ -42,148 +44,12 @@ const FLOATING_EMOJI = [
 ] as const;
 
 export default function Home() {
-
   return (
-    <main className="flex h-screen items-center justify-center overflow-hidden" style={{ backgroundColor: COLORS.black }}>
-      <style jsx>{`
-        @keyframes float {
-          0% {
-            transform: translateY(100vh) rotate(0deg);
-            opacity: 0;
-          }
-          10% {
-            opacity: 1;
-          }
-          90% {
-            opacity: 1;
-          }
-          100% {
-            transform: translateY(-100px) rotate(360deg);
-            opacity: 0;
-          }
-        }
-
-        @keyframes throb {
-          0%, 100% {
-            opacity: 0.6;
-            transform: translate(-50%, -50%) scale(1);
-          }
-          50% {
-            opacity: 0.9;
-            transform: translate(-50%, -50%) scale(1.05);
-          }
-        }
-
-        @keyframes pulse {
-          0%, 100% {
-            box-shadow: inset 0 0 200px 100px ${COLORS.hotPink}66;
-          }
-          50% {
-            box-shadow: inset 0 0 300px 150px ${COLORS.deepPink}b3;
-          }
-        }
-
-        .floating-emoji {
-          position: absolute;
-          top: 0;
-          animation: float linear infinite;
-          pointer-events: none;
-          z-index: 10;
-          filter: drop-shadow(0 0 10px ${COLORS.pinkGlow});
-        }
-
-        .vignette {
-          position: absolute;
-          inset: 0;
-          pointer-events: none;
-          z-index: 20;
-          animation: pulse 2s ease-in-out infinite;
-          background: radial-gradient(ellipse at center, transparent 0%, transparent 40%, ${COLORS.hotPink}4d 100%);
-        }
-
-        .pink-overlay {
-          position: absolute;
-          inset: 0;
-          pointer-events: none;
-          z-index: 5;
-          background: radial-gradient(circle at 50% 50%, ${COLORS.lightPink} 0%, transparent 70%);
-          animation: throb 3s ease-in-out infinite;
-        }
-
-        .blur-background {
-          filter: blur(40px);
-          opacity: 0.6;
-          z-index: 0;
-        }
-
-        .title {
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          font-family: ${FONT_FAMILY};
-          font-size: clamp(2rem, 10vw, 8rem);
-          font-weight: bold;
-          color: ${COLORS.hotPink};
-          text-shadow:
-            0 0 20px ${COLORS.white}cc,
-            0 0 40px ${COLORS.hotPink}99,
-            4px 4px 0px ${COLORS.white},
-            -4px -4px 0px ${COLORS.white},
-            4px -4px 0px ${COLORS.white},
-            -4px 4px 0px ${COLORS.white};
-          z-index: 15;
-          pointer-events: none;
-          animation: throb 3s ease-in-out infinite;
-          text-align: center;
-          line-height: 1.2;
-          padding: 0 1rem;
-          max-width: 95vw;
-          white-space: nowrap;
-        }
-
-
-        @media (max-width: 768px) {
-          .title {
-            text-shadow:
-              0 0 15px ${COLORS.white}cc,
-              0 0 30px ${COLORS.hotPink}99,
-              2px 2px 0px ${COLORS.white},
-              -2px -2px 0px ${COLORS.white},
-              2px -2px 0px ${COLORS.white},
-              -2px 2px 0px ${COLORS.white};
-          }
-
-          .floating-emoji {
-            font-size: 2rem !important;
-          }
-        }
-
-        @media (max-width: 480px) {
-          .title {
-            text-shadow:
-              0 0 10px ${COLORS.white}cc,
-              0 0 20px ${COLORS.hotPink}99,
-              1px 1px 0px ${COLORS.white},
-              -1px -1px 0px ${COLORS.white},
-              1px -1px 0px ${COLORS.white},
-              -1px 1px 0px ${COLORS.white};
-          }
-
-          .floating-emoji {
-            font-size: 1.5rem !important;
-          }
-        }
-      `}</style>
-
+    <main
+      className="flex h-screen items-center justify-center overflow-hidden"
+      style={{ backgroundColor: COLORS.black }}
+    >
       <div className="relative w-screen h-screen">
-        <Image
-          src={IMAGE_PREVIEW}
-          alt=""
-          className="object-cover blur-background"
-          fill
-          unoptimized
-        />
         <Image
           placeholder="blur"
           blurDataURL={IMAGE_PREVIEW}
@@ -196,7 +62,25 @@ export default function Home() {
 
         <div className="pink-overlay" />
         <div className="vignette" />
-        <div className="title">{SITE_TITLE}</div>
+
+        <div
+          className="title"
+          style={{
+            fontFamily: FONT_FAMILY,
+            fontSize: 'clamp(2rem, 10vw, 8rem)',
+            color: COLORS.hotPink,
+            textShadow: `
+              0 0 20px ${COLORS.white}cc,
+              0 0 40px ${COLORS.hotPink}99,
+              4px 4px 0px ${COLORS.white},
+              -4px -4px 0px ${COLORS.white},
+              4px -4px 0px ${COLORS.white},
+              -4px 4px 0px ${COLORS.white}
+            `,
+          }}
+        >
+          {SITE_TITLE}
+        </div>
 
         {FLOATING_EMOJI.map((item, index) => (
           <div
@@ -217,5 +101,3 @@ export default function Home() {
     </main>
   );
 }
-
-
