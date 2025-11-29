@@ -44,10 +44,10 @@ export default function Home() {
             textShadow: `
               0 0 20px ${COLORS.white}cc,
               0 0 40px ${COLORS.hotPink}99,
-              4px 4px 0px ${COLORS.white},
-              -4px -4px 0px ${COLORS.white},
-              4px -4px 0px ${COLORS.white},
-              -4px 4px 0px ${COLORS.white}
+              0.125rem 0.125rem 0px ${COLORS.white},
+              -0.125rem -0.125rem 0px ${COLORS.white},
+              0.125rem -0.125rem 0px ${COLORS.white},
+              -0.125rem 0.125rem 0px ${COLORS.white}
             `,
           }}
         >
