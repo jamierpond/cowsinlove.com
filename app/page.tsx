@@ -93,7 +93,7 @@ export default function Home() {
               key={index}
               className="wiggle-char"
               style={{
-                '--delay': `${index * 0.1}s`,
+                '--delay': `${index * 0.15}s`,
               } as React.CSSProperties}
             >
               {char === ' ' ? '\u00A0' : char}

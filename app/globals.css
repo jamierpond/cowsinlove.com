@@ -55,16 +55,16 @@ body {
 
 @keyframes wave {
   0%, 100% {
-    transform: rotate(-3deg) translateY(0);
+    transform: rotate(-1.5deg) translateY(0);
   }
   25% {
-    transform: rotate(3deg) translateY(-0.4rem);
+    transform: rotate(1.5deg) translateY(-0.2rem);
   }
   50% {
-    transform: rotate(-2deg) translateY(0.4rem);
+    transform: rotate(-1deg) translateY(0.2rem);
   }
   75% {
-    transform: rotate(2deg) translateY(-0.3rem);
+    transform: rotate(1deg) translateY(-0.15rem);
   }
 }
 
@@ -154,7 +154,7 @@ body {
 
 .wiggle-char {
   display: inline-block;
-  animation: wave 2s ease-in-out infinite;
+  animation: wave 3.5s ease-in-out infinite;
   animation-delay: var(--delay);
 }
 
