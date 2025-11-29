@@ -9,7 +9,7 @@ export const COLORS = {
   white: '#ffffff',
 } as const;
 
-export const FONT_FAMILY = "'Comic Sans MS', 'Comic Sans', cursive";
+export const FONT_FAMILY = "var(--font-comic-neue)";
 
 export const OG_IMAGE_SIZE = {
   width: 1200,
