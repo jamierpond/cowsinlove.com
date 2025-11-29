@@ -58,7 +58,12 @@ export default function InteractiveContent() {
       <div
         className="container"
         onClick={handleClick}
-        style={{ cursor: 'pointer' }}
+        style={{
+          cursor: 'pointer',
+          position: 'fixed',
+          inset: 0,
+          pointerEvents: 'auto',
+        }}
       >
         {FLOATING_EMOJI.map((item, index) => (
           <div
