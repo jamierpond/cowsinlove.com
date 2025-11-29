@@ -88,7 +88,17 @@ export default function Home() {
             `,
           }}
         >
-          {SITE_TITLE}
+          {SITE_TITLE.split('').map((char, index) => (
+            <span
+              key={index}
+              className="wiggle-char"
+              style={{
+                '--delay': `${index * 0.1}s`,
+              } as React.CSSProperties}
+            >
+              {char === ' ' ? '\u00A0' : char}
+            </span>
+          ))}
         </div>
 
         {FLOATING_EMOJI.map((item, index) => (
