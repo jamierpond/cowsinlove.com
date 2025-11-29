@@ -3,9 +3,7 @@ import { SITE_TITLE, COLORS, OG_IMAGE_SIZE } from '@/lib/constants';
 
 export const runtime = 'edge';
 
-export async function GET(request: Request) {
-  const { origin } = new URL(request.url);
-
+export function getOgImage(origin: string = 'https://cowsinlove.com') {
   return new ImageResponse(
     (
       <div
@@ -147,4 +145,8 @@ export async function GET(request: Request) {
       ...OG_IMAGE_SIZE,
     }
   );
+}
+
+export async function GET() {
+  return getOgImage();
 }
