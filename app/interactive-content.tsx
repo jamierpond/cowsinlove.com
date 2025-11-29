@@ -55,23 +55,6 @@ export default function InteractiveContent() {
     <>
       <audio ref={audioRef} src="/milkshake.mp3" loop />
 
-      {!audioStarted && (
-        <div
-          style={{
-            position: 'fixed',
-            top: '70%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            fontSize: '4rem',
-            zIndex: 200,
-            pointerEvents: 'none',
-            animation: 'bounce 0.6s ease-in-out infinite',
-          }}
-        >
-          👆🐄
-        </div>
-      )}
-
       <div
         className="container"
         onClick={handleClick}
