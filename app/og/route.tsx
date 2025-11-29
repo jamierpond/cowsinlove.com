@@ -30,61 +30,37 @@ export function getOgImage(origin: string = 'https://cowsinlove.com') {
           }}
         />
 
-        {/* Dark overlay for text readability */}
+        {/* Pink overlay */}
         <div
           style={{
             position: 'absolute',
             width: '100%',
             height: '100%',
-            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            background: `radial-gradient(circle at 50% 50%, ${COLORS.hotPink}26 0%, transparent 70%)`,
           }}
         />
 
-        {/* Background decorative emojis */}
+        {/* Vignette */}
         <div
           style={{
             position: 'absolute',
-            top: '10%',
-            left: '10%',
-            fontSize: '80px',
-            opacity: 0.3,
+            width: '100%',
+            height: '100%',
+            background: 'radial-gradient(circle at 50% 50%, transparent 0%, rgba(0, 0, 0, 0.6) 100%)',
           }}
-        >
-          🐄
-        </div>
-        <div
-          style={{
-            position: 'absolute',
-            top: '15%',
-            right: '15%',
-            fontSize: '80px',
-            opacity: 0.3,
-          }}
-        >
-          🐄
-        </div>
-        <div
-          style={{
-            position: 'absolute',
-            bottom: '10%',
-            left: '15%',
-            fontSize: '70px',
-            opacity: 0.4,
-          }}
-        >
-          ❤️
-        </div>
-        <div
-          style={{
-            position: 'absolute',
-            bottom: '15%',
-            right: '10%',
-            fontSize: '70px',
-            opacity: 0.4,
-          }}
-        >
-          💕
-        </div>
+        />
+
+        {/* Floating emojis - scattered around */}
+        <div style={{ position: 'absolute', top: '8%', left: '12%', fontSize: '60px', opacity: 0.6 }}>❤️</div>
+        <div style={{ position: 'absolute', top: '15%', left: '25%', fontSize: '70px', opacity: 0.5 }}>🐄</div>
+        <div style={{ position: 'absolute', top: '22%', left: '75%', fontSize: '55px', opacity: 0.6 }}>💕</div>
+        <div style={{ position: 'absolute', top: '65%', left: '15%', fontSize: '65px', opacity: 0.5 }}>🐄</div>
+        <div style={{ position: 'absolute', top: '70%', left: '82%', fontSize: '60px', opacity: 0.6 }}>💖</div>
+        <div style={{ position: 'absolute', top: '85%', left: '68%', fontSize: '70px', opacity: 0.5 }}>🐄</div>
+        <div style={{ position: 'absolute', top: '12%', left: '88%', fontSize: '50px', opacity: 0.7 }}>✨</div>
+        <div style={{ position: 'absolute', top: '78%', left: '35%', fontSize: '55px', opacity: 0.6 }}>💓</div>
+        <div style={{ position: 'absolute', top: '45%', left: '8%', fontSize: '48px', opacity: 0.7 }}>💫</div>
+        <div style={{ position: 'absolute', top: '40%', left: '90%', fontSize: '52px', opacity: 0.7 }}>✨</div>
 
         {/* Main title */}
         <div
@@ -94,6 +70,7 @@ export function getOgImage(origin: string = 'https://cowsinlove.com') {
             alignItems: 'center',
             justifyContent: 'center',
             textAlign: 'center',
+            zIndex: 10,
           }}
         >
           <div
@@ -101,44 +78,20 @@ export function getOgImage(origin: string = 'https://cowsinlove.com') {
               fontSize: '140px',
               fontWeight: 'bold',
               color: COLORS.hotPink,
-              fontFamily: 'Comic Sans MS, Comic Sans, cursive',
+              fontFamily: 'Comic Neue, Comic Sans MS, cursive',
               textShadow: `
-                0 0 30px ${COLORS.white}cc,
-                0 0 60px ${COLORS.hotPink}99,
-                6px 6px 0px ${COLORS.white},
-                -6px -6px 0px ${COLORS.white},
-                6px -6px 0px ${COLORS.white},
-                -6px 6px 0px ${COLORS.white}
+                0 0 20px ${COLORS.white}cc,
+                0 0 40px ${COLORS.hotPink}99,
+                0.125rem 0.125rem 0px ${COLORS.white},
+                -0.125rem -0.125rem 0px ${COLORS.white},
+                0.125rem -0.125rem 0px ${COLORS.white},
+                -0.125rem 0.125rem 0px ${COLORS.white}
               `,
             }}
           >
             {SITE_TITLE}
           </div>
-
-          {/* Decorative hearts around title */}
-          <div
-            style={{
-              display: 'flex',
-              gap: '20px',
-              marginTop: '30px',
-              fontSize: '60px',
-            }}
-          >
-            <span>🐄</span>
-            <span>❤️</span>
-            <span>🐄</span>
-          </div>
         </div>
-
-        {/* Pink glow overlay */}
-        <div
-          style={{
-            position: 'absolute',
-            width: '100%',
-            height: '100%',
-            background: `radial-gradient(circle at 50% 50%, ${COLORS.hotPink}26 0%, transparent 70%)`,
-          }}
-        />
       </div>
     ),
     {
