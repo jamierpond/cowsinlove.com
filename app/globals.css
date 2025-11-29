@@ -62,6 +62,26 @@ body {
   }
 }
 
+@keyframes explode {
+  0% {
+    transform: translate(-50%, -50%) scale(0) rotate(0deg);
+    opacity: 1;
+  }
+  70% {
+    opacity: 1;
+  }
+  100% {
+    transform:
+      translate(
+        calc(-50% + var(--dx)),
+        calc(-50% + var(--dy) - var(--float-up))
+      )
+      scale(1.5)
+      rotate(var(--rotation));
+    opacity: 0;
+  }
+}
+
 /* utility-ish classes that mirror your old styled-jsx */
 
 .floating-emoji {
@@ -134,5 +154,14 @@ body {
   filter: blur(40px);
   opacity: 0.6;
   z-index: 0;
+}
+
+.exploding-emoji {
+  position: absolute;
+  pointer-events: none;
+  z-index: 100;
+  font-size: 3.5rem;
+  animation: explode var(--duration) ease-out forwards;
+  filter: drop-shadow(0 0 0.9375rem rgba(255, 105, 180, 1));
 }
 

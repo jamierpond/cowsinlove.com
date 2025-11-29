@@ -1,20 +1,57 @@
+'use client';
+
 import Image from 'next/image';
+import { useState } from 'react';
 import Cows from '../public/cows.jpg';
 import { SITE_TITLE, COLORS, FONT_FAMILY, IMAGE_PREVIEW } from '@/lib/constants';
 import { FLOATING_EMOJI } from './emoji';
 
-
-// force static
-export const dynamic = 'force-static';
-
-
 export default function Home() {
+  const [explodingEmojis, setExplodingEmojis] = useState<
+    { x: number; y: number; id: number; emoji: string; dx: number; dy: number; floatUp: number; rotation: number; duration: number }[]
+  >([]);
+
+  const handleClick = (e: React.MouseEvent) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    const emojiChoices = ['🐄', '❤️', '💕', '💖', '💗', '💓', '💝', '💞', '💘', '✨', '💫'];
+
+    const newEmojis = Array.from({ length: 20 }, (_, i) => {
+      const angle = (i / 20) * Math.PI * 2 + (Math.random() - 0.5) * 0.5;
+      const distance = 8 + Math.random() * 8;
+      const floatUp = 10 + Math.random() * 8;
+      const rotation = 360 + Math.random() * 720;
+      const duration = 0.8 + Math.random() * 0.4;
+
+      return {
+        x,
+        y,
+        id: Date.now() + i,
+        emoji: emojiChoices[Math.floor(Math.random() * emojiChoices.length)],
+        dx: Math.cos(angle) * distance,
+        dy: Math.sin(angle) * distance,
+        floatUp,
+        rotation,
+        duration,
+      };
+    });
+
+    setExplodingEmojis(prev => [...prev, ...newEmojis]);
+
+    setTimeout(() => {
+      setExplodingEmojis(prev => prev.filter(e => !newEmojis.includes(e)));
+    }, 1200);
+  };
+
   return (
     <main
-      className="flex h-screen items-center justify-center overflow-hidden"
-      style={{ backgroundColor: COLORS.black }}
+      className="container"
+      onClick={handleClick}
+      style={{ cursor: 'pointer' }}
     >
-      <div className="relative w-screen h-screen">
+      <div className="background">
         <Image
           src={IMAGE_PREVIEW}
           alt=""
@@ -67,6 +104,24 @@ export default function Home() {
             }}
           >
             {item.emoji}
+          </div>
+        ))}
+
+        {explodingEmojis.map((emoji) => (
+          <div
+            key={emoji.id}
+            className="exploding-emoji"
+            style={{
+              left: emoji.x,
+              top: emoji.y,
+              '--dx': `${emoji.dx}rem`,
+              '--dy': `${emoji.dy}rem`,
+              '--float-up': `${emoji.floatUp}rem`,
+              '--rotation': `${emoji.rotation}deg`,
+              '--duration': `${emoji.duration}s`,
+            } as React.CSSProperties}
+          >
+            {emoji.emoji}
           </div>
         ))}
       </div>
