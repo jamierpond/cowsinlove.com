@@ -54,7 +54,7 @@ class _Server(asyncssh.SSHServer):
 async def _handle(process: asyncssh.SSHServerProcess):
     term = process.get_terminal_type()
     if not term:
-        process.stderr.write("interactive TTY required (try: ssh -t cowsinlove.com)\r\n")
+        process.stderr.write("interactive TTY required (try: ssh -t ssh.cowsinlove.com)\r\n")
         process.exit(1)
         return
 
