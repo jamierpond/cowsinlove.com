@@ -40,7 +40,7 @@ def _set_winsize(fd, rows, cols):
 
 class _Server(asyncssh.SSHServer):
     def begin_auth(self, username):
-        return False  # no credentials required
+        return False
 
     def password_auth_supported(self):
         return False
@@ -59,22 +59,8 @@ async def _handle(process: asyncssh.SSHServerProcess):
     cols, rows, _, _ = process.get_terminal_size()
     master_fd, slave_fd = pty.openpty()
     _set_winsize(master_fd, rows or 24, cols or 80)
-    # Disable canonical mode + echo on the slave before exec so single
-    # keystrokes flow byte-by-byte to curses immediately. Otherwise `q` sits
-    # in the line-discipline buffer until the user presses Enter.
-    attrs = termios.tcgetattr(slave_fd)
-    attrs[3] &= ~(termios.ICANON | termios.ECHO)  # c_lflag
-    attrs[6][termios.VMIN] = 1
-    attrs[6][termios.VTIME] = 0
-    termios.tcsetattr(slave_fd, termios.TCSANOW, attrs)
 
-    env = {
-        "TERM": term,
-        "LANG": "C.UTF-8",
-        "LC_ALL": "C.UTF-8",
-        "PATH": "/usr/local/bin:/usr/bin:/bin",
-        "HOME": "/tmp",
-    }
+    env = {"TERM": term, "LANG": "C.UTF-8", "LC_ALL": "C.UTF-8"}
 
     def _attach_controlling_tty():
         fcntl.ioctl(0, termios.TIOCSCTTY, 0)
@@ -89,7 +75,6 @@ async def _handle(process: asyncssh.SSHServerProcess):
     os.close(slave_fd)
 
     loop = asyncio.get_running_loop()
-    done = asyncio.Event()
 
     def _pty_readable():
         try:
@@ -97,22 +82,18 @@ async def _handle(process: asyncssh.SSHServerProcess):
         except OSError:
             data = b""
         if not data:
-            try:
-                loop.remove_reader(master_fd)
-            except Exception:
-                pass
-            done.set()
+            loop.remove_reader(master_fd)
             return
         try:
             process.stdout.write(data.decode("utf-8", errors="replace"))
         except (BrokenPipeError, ConnectionResetError):
-            done.set()
+            loop.remove_reader(master_fd)
 
     loop.add_reader(master_fd, _pty_readable)
 
     async def _ssh_to_pty():
         try:
-            while not done.is_set():
+            while True:
                 try:
                     data = await process.stdin.read(4096)
                 except asyncssh.TerminalSizeChanged as ev:
@@ -137,25 +118,11 @@ async def _handle(process: asyncssh.SSHServerProcess):
     forward = asyncio.create_task(_ssh_to_pty())
     rc = await proc.wait()
     forward.cancel()
-    # Drain any final pty output (curses' terminal-restore escape codes)
-    # before tearing down the channel, otherwise the client's terminal is
-    # left mid-redraw and needs a stray keypress to recover.
-    try:
-        await asyncio.wait_for(done.wait(), timeout=1.0)
-    except asyncio.TimeoutError:
-        pass
     try:
         loop.remove_reader(master_fd)
     except Exception:
         pass
-    try:
-        os.close(master_fd)
-    except OSError:
-        pass
-    try:
-        await process.stdout.drain()
-    except Exception:
-        pass
+    os.close(master_fd)
     process.exit(rc if rc is not None else 0)
 
 
@@ -166,6 +133,7 @@ async def _run():
         server_host_keys=keys,
         process_factory=_handle,
         keepalive_interval=30,
+        line_editor=False,
     )
     print(f"cowsinlove ssh listening on {LISTEN_HOST}:{LISTEN_PORT}", flush=True)
     await asyncio.Future()
