@@ -5,7 +5,6 @@ import fcntl
 import os
 import pty
 import struct
-import subprocess
 import sys
 import termios
 from pathlib import Path
@@ -14,7 +13,7 @@ import asyncssh
 
 SCRIPT = "/usr/local/bin/cowsinlove.py"
 HOST_KEY_DIR = Path(os.environ.get("SSH_HOST_KEY_DIR", "/data/ssh_keys"))
-HOST_KEY_FILES = [("ed25519", "ssh_host_ed25519_key"), ("rsa", "ssh_host_rsa_key")]
+HOST_KEY_FILES = [("ssh-ed25519", "ssh_host_ed25519_key"), ("ssh-rsa", "ssh_host_rsa_key")]
 LISTEN_HOST = "0.0.0.0"
 LISTEN_PORT = int(os.environ.get("SSH_PORT", "22"))
 
@@ -22,13 +21,12 @@ LISTEN_PORT = int(os.environ.get("SSH_PORT", "22"))
 def _ensure_host_keys():
     HOST_KEY_DIR.mkdir(parents=True, exist_ok=True)
     paths = []
-    for kind, name in HOST_KEY_FILES:
+    for alg, name in HOST_KEY_FILES:
         path = HOST_KEY_DIR / name
         if not path.exists():
-            subprocess.run(
-                ["ssh-keygen", "-q", "-t", kind, "-N", "", "-f", str(path)],
-                check=True,
-            )
+            key = asyncssh.generate_private_key(alg)
+            key.write_private_key(str(path))
+            key.write_public_key(str(path) + ".pub")
         paths.append(str(path))
     return paths
 
@@ -61,6 +59,14 @@ async def _handle(process: asyncssh.SSHServerProcess):
     cols, rows, _, _ = process.get_terminal_size()
     master_fd, slave_fd = pty.openpty()
     _set_winsize(master_fd, rows or 24, cols or 80)
+    # Disable canonical mode + echo on the slave before exec so single
+    # keystrokes flow byte-by-byte to curses immediately. Otherwise `q` sits
+    # in the line-discipline buffer until the user presses Enter.
+    attrs = termios.tcgetattr(slave_fd)
+    attrs[3] &= ~(termios.ICANON | termios.ECHO)  # c_lflag
+    attrs[6][termios.VMIN] = 1
+    attrs[6][termios.VTIME] = 0
+    termios.tcsetattr(slave_fd, termios.TCSANOW, attrs)
 
     env = {
         "TERM": term,
