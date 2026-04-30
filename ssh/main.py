@@ -17,13 +17,43 @@ import time
 
 locale.setlocale(locale.LC_ALL, "")
 
-BANNER = [
-    "                       _       _                                     ",
-    "  ___ _____      _____(_)_ __ | | _____   _____   ___ ___  _ __ ___  ",
-    " / __/ _ \\ \\ /\\ / / __| | '_ \\| |/ _ \\ \\ / / _ \\ / __/ _ \\| '_ ` _ \\ ",
-    "| (_| (_) \\ V  V /\\__ \\ | | | | | (_) \\ V /  __/| (_| (_) | | | | | |",
-    " \\___\\___/ \\_/\\_/ |___/_|_| |_|_|\\___/ \\_/ \\___(_)___\\___/|_| |_| |_|",
+_BANNER_TEXT = "cowsinlove.com"
+# rounded-figlet glyph per letter; each letter wiggles independently.
+LETTERS = [
+    # 'c'
+    ['       ', '       ', '  ____ ', ' / ___)', '( (___ ', ' \\____)'],
+    # 'o'
+    ['       ', '       ', '  ___  ', ' / _ \\ ', '| |_| |', ' \\___/ '],
+    # 'w'
+    ['       ', '       ', ' _ _ _ ', '| | | |', '| | | |', ' \\___/ '],
+    # 's'
+    ['      ', '      ', '  ___ ', ' /___)', '|___ |', '(___/ '],
+    # 'i'
+    [' _ ', '(_)', ' _ ', '| |', '| |', '|_|'],
+    # 'n'
+    ['       ', '       ', ' ____  ', '|  _ \\ ', '| | | |', '|_| |_|'],
+    # 'l'
+    [' _  ', '| | ', '| | ', '| | ', '| | ', ' \\_)'],
+    # 'o'
+    ['       ', '       ', '  ___  ', ' / _ \\ ', '| |_| |', ' \\___/ '],
+    # 'v'
+    ['       ', '       ', ' _   _ ', '| | | |', ' \\ V / ', '  \\_/  '],
+    # 'e'
+    ['       ', '       ', ' _____ ', '| ___ |', '| ____|', '|_____)'],
+    # '.'
+    ['   ', '   ', '   ', '   ', ' _ ', '(_)'],
+    # 'c'
+    ['       ', '       ', '  ____ ', ' / ___)', '( (___ ', ' \\____)'],
+    # 'o'
+    ['       ', '       ', '  ___  ', ' / _ \\ ', '| |_| |', ' \\___/ '],
+    # 'm'
+    ['       ', '       ', ' ____  ', '|    \\ ', '| | | |', '|_|_|_|'],
 ]
+LETTER_H = len(LETTERS[0])
+LETTER_WIDTHS = [len(g[0]) for g in LETTERS]
+LETTER_SPACING = 0  # glyphs already have inner padding
+BANNER_WIDTH = sum(LETTER_WIDTHS) + LETTER_SPACING * (len(LETTERS) - 1)
+N_LETTERS = len(LETTERS)
 
 # 'E' = heart-eye slot (two adjacent Es per cow), replaced at render time.
 # Left cow faces right; right cow faces left. They lean toward the centre.
@@ -68,22 +98,31 @@ def safe_addstr(stdscr, y, x, text, attr=0):
 
 def draw_banner(stdscr, screen_w, t, color):
     amp = 1
-    banner_w = max(len(r) for r in BANNER)
-    if banner_w + 2 > screen_w:
-        # too narrow: drop in plain
-        title = "cowsinlove.com"
+    if BANNER_WIDTH + 2 > screen_w:
+        title = _BANNER_TEXT
         x = max(0, (screen_w - len(title)) // 2)
         safe_addstr(stdscr, 1, x, title, color | curses.A_BOLD)
         return
-    start_x = (screen_w - banner_w) // 2
-    for row_i, line in enumerate(BANNER):
-        for col_i, ch in enumerate(line):
-            if ch == " ":
-                continue
-            offset = int(round(math.sin(col_i * 0.22 + t * 3.0) * amp))
-            y = 1 + row_i + offset + amp
-            x = start_x + col_i
-            safe_addstr(stdscr, y, x, ch, color | curses.A_BOLD)
+    start_x = (screen_w - BANNER_WIDTH) // 2
+    base_y = 1 + amp  # leave headroom for upward wiggle
+    cursor_x = start_x
+    for li, glyph in enumerate(LETTERS):
+        # comic-sans wiggle: per-letter staggered phase, mostly y, tiny x sway
+        phase = li * 0.9 + t * 3.6
+        dy = int(round(math.sin(phase) * amp))
+        dx = int(round(math.cos(phase * 0.5) * 0.6))  # subtle horizontal drift
+        for r, line in enumerate(glyph):
+            for c, ch in enumerate(line):
+                if ch == " ":
+                    continue
+                safe_addstr(
+                    stdscr,
+                    base_y + r + dy,
+                    cursor_x + c + dx,
+                    ch,
+                    color | curses.A_BOLD,
+                )
+        cursor_x += LETTER_WIDTHS[li] + LETTER_SPACING
 
 
 def draw_cow(stdscr, cow, x, y, t, body_color, heart_color):
@@ -110,7 +149,7 @@ def draw_grass(stdscr, w, h, grass_color):
 
 
 def draw_clouds(stdscr, w, t, color):
-    cloud_y = 7
+    cloud_y = 10
     if cloud_y < 0:
         return
     period = w + len(CLOUD) + 20
@@ -123,7 +162,7 @@ def draw_sun(stdscr, w, t, color):
     cx = w - 8
     if cx < 10:
         return
-    cy = 7
+    cy = 12
     rays = ["\\ | /", " \\|/ ", "--O--", " /|\\ ", "/ | \\"]
     pulse = int(t * 3) % 2
     attr = color | (curses.A_BOLD if pulse else 0)
@@ -139,12 +178,18 @@ def main(stdscr):
         bg = -1
     except curses.error:
         bg = curses.COLOR_BLACK
-    curses.init_pair(1, curses.COLOR_RED, bg)
-    curses.init_pair(2, curses.COLOR_WHITE, bg)
-    curses.init_pair(3, curses.COLOR_GREEN, bg)
-    curses.init_pair(4, curses.COLOR_MAGENTA, bg)
-    curses.init_pair(5, curses.COLOR_YELLOW, bg)
-    curses.init_pair(6, curses.COLOR_CYAN, bg)
+    def _pair(idx, fg, fallback):
+        try:
+            curses.init_pair(idx, fg, bg)
+        except curses.error:
+            curses.init_pair(idx, fallback, bg)
+
+    _pair(1, 197, curses.COLOR_RED)       # heart red-pink
+    _pair(2, 231, curses.COLOR_WHITE)     # cow white
+    _pair(3, 84,  curses.COLOR_GREEN)     # grass
+    _pair(4, 200, curses.COLOR_MAGENTA)   # banner hot pink
+    _pair(5, 220, curses.COLOR_YELLOW)    # sun
+    _pair(6, 117, curses.COLOR_CYAN)      # sky/clouds
 
     HEART = curses.color_pair(1)
     COW = curses.color_pair(2)
