@@ -268,7 +268,7 @@ def main(stdscr):
             continue
 
         cow_h = COW_HEIGHT
-        ground_y = h - cow_h - 2
+        ground_y = h - cow_h - 3
 
         # Bake the regions: blue sky above, green ground below.
         paint_region(stdscr, 0, ground_y, w, SKY)
