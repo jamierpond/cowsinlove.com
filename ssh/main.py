@@ -57,21 +57,34 @@ N_LETTERS = len(LETTERS)
 
 # 'E' = heart-eye slot (two adjacent Es per cow), replaced at render time.
 # Left cow faces right; right cow faces left. They lean toward the centre.
-LEFT_COW = [
-    r"      ^__^           ",
-    r" _____/(EE)          ",
-    r"/     /(__)          ",
-    r"W----||U             ",
-    r" ||  ||              ",
+# Line-art cow. `E` marks heart-eye slots (originally `oo`).
+# COW_RIGHT has its head on the right of the figure → used as the LEFT cow in
+# the scene so its face points toward the centre.
+COW_RIGHT = [
+    "           __n__n__   ",
+    "    .------`-\\EE/-'   ",
+    "   /  ##  ## (oo)     ",
+    "  / \\## __   ./       ",
+    "     |//YY \\|/        ",
+    "     |||   |||        ",
 ]
 
-RIGHT_COW = [
-    r"           ^__^      ",
-    r"          (EE)\_____ ",
-    r"          (__)\     \\",
-    r"             U||----W",
-    r"               ||  ||",
-]
+
+def _mirror_row(s):
+    flips = {"(": ")", ")": "(", "\\": "/", "/": "\\", "'": "`", "`": "'", "<": ">", ">": "<"}
+    return "".join(flips.get(c, c) for c in s[::-1])
+
+
+COW_LEFT = [_mirror_row(r) for r in COW_RIGHT]
+
+LEFT_COW = COW_RIGHT   # left side of scene → faces right
+RIGHT_COW = COW_LEFT   # right side of scene → faces left
+
+# Face anchor = front edge of head (rightmost ink on the eye row).
+_EYE_ROW = 2
+LEFT_COW_FACE_COL = max(j for j, c in enumerate(COW_RIGHT[_EYE_ROW]) if c != " ")
+RIGHT_COW_FACE_COL = min(j for j, c in enumerate(COW_LEFT[_EYE_ROW]) if c != " ")
+COW_HEIGHT = len(COW_RIGHT)
 
 HEART_FRAMES = ["♥♥", "❤❤", "♥♥", "♡♡"]
 KISS_HEARTS = "♥❤♡·"
@@ -96,21 +109,23 @@ def safe_addstr(stdscr, y, x, text, attr=0):
         pass
 
 
-def draw_banner(stdscr, screen_w, t, color):
+def draw_banner(stdscr, screen_w, t, rainbow_attrs):
     amp = 1
     if BANNER_WIDTH + 2 > screen_w:
         title = _BANNER_TEXT
         x = max(0, (screen_w - len(title)) // 2)
-        safe_addstr(stdscr, 1, x, title, color | curses.A_BOLD)
+        safe_addstr(stdscr, 1, x, title, rainbow_attrs[0])
         return
     start_x = (screen_w - BANNER_WIDTH) // 2
-    base_y = 1 + amp  # leave headroom for upward wiggle
+    base_y = 1 + amp
     cursor_x = start_x
+    n_colors = len(rainbow_attrs)
     for li, glyph in enumerate(LETTERS):
-        # comic-sans wiggle: per-letter staggered phase, mostly y, tiny x sway
         phase = li * 0.9 + t * 3.6
         dy = int(round(math.sin(phase) * amp))
-        dx = int(round(math.cos(phase * 0.5) * 0.6))  # subtle horizontal drift
+        dx = int(round(math.cos(phase * 0.5) * 0.6))
+        # rainbow cycles through letters and time
+        attr = rainbow_attrs[(li + int(t * 3)) % n_colors]
         for r, line in enumerate(glyph):
             for c, ch in enumerate(line):
                 if ch == " ":
@@ -119,33 +134,47 @@ def draw_banner(stdscr, screen_w, t, color):
                     stdscr,
                     base_y + r + dy,
                     cursor_x + c + dx,
-                    ch,
-                    color | curses.A_BOLD,
+                    "█",
+                    attr,
                 )
         cursor_x += LETTER_WIDTHS[li] + LETTER_SPACING
 
 
-def draw_cow(stdscr, cow, x, y, t, body_color, heart_color):
+def draw_cow(stdscr, cow, x, y, t, palette):
+    """Render a line-art cow. `E` slots animate as heart eyes; `#` are patches."""
     frame_i = int(t * 5) % len(HEART_FRAMES)
     hearts = HEART_FRAMES[frame_i]
-    pulse_attr = heart_color | (curses.A_BOLD if frame_i % 2 == 0 else 0)
+    eye_attr = palette["eye"] | (curses.A_BOLD if frame_i % 2 == 0 else 0)
     eye_idx = 0
     for i, line in enumerate(cow):
         for j, c in enumerate(line):
             if c == " ":
                 continue
+            ry, rx = y + i, x + j
             if c == "E":
-                safe_addstr(stdscr, y + i, x + j, hearts[eye_idx % 2], pulse_attr)
+                safe_addstr(stdscr, ry, rx, hearts[eye_idx % 2], eye_attr)
                 eye_idx += 1
+            elif c == "#":
+                safe_addstr(stdscr, ry, rx, "#", palette["patch"])
             else:
-                safe_addstr(stdscr, y + i, x + j, c, body_color | curses.A_BOLD)
+                safe_addstr(stdscr, ry, rx, c, palette["ink"])
 
 
-def draw_grass(stdscr, w, h, grass_color):
-    for row, y in enumerate((h - 2, h - 1)):
+def paint_region(stdscr, y0, y1, w, attr):
+    blank = " " * w
+    for y in range(y0, y1):
+        safe_addstr(stdscr, y, 0, blank, attr)
+
+
+def draw_grass(stdscr, w, h, ground_y, grass_color):
+    # Only the bottom strip — leave cow rows alone so legs aren't overwritten.
+    strip_top = max(ground_y, h - 2)
+    for y in range(strip_top, h):
         for x in range(w):
-            ch = GRASS_CHARS[(x * 3 + y * 7 + row) % len(GRASS_CHARS)]
-            safe_addstr(stdscr, y, x, ch, grass_color)
+            ch = GRASS_CHARS[(x * 3 + y * 7) % len(GRASS_CHARS)]
+            if (x + y) % 3 == 0:
+                continue
+            safe_addstr(stdscr, y, x, ch, grass_color | curses.A_BOLD)
 
 
 def draw_clouds(stdscr, w, t, color):
@@ -155,7 +184,30 @@ def draw_clouds(stdscr, w, t, color):
     period = w + len(CLOUD) + 20
     for offset in (0, period // 2):
         x = int((t * 4 + offset)) % period - len(CLOUD)
-        safe_addstr(stdscr, cloud_y, x, CLOUD, color | curses.A_DIM)
+        safe_addstr(stdscr, cloud_y, x, CLOUD, color | curses.A_BOLD)
+
+
+def draw_rainbow_arc(stdscr, w, ground_y, rainbow_attrs):
+    """Half-arc rainbow arching across the sky, anchored to the ground."""
+    # Arc geometry — large radius so the arc is gentle.
+    cx = w // 2
+    radius_x = max(20, w // 3)
+    radius_y = max(8, ground_y - 4)
+    if radius_y < 6:
+        return
+    # Draw n concentric arcs, one per rainbow band.
+    samples = max(80, w * 2)
+    for band, attr in enumerate(rainbow_attrs):
+        rx = radius_x - band
+        ry = radius_y - band
+        if rx <= 0 or ry <= 0:
+            continue
+        for s in range(samples):
+            theta = math.pi * s / (samples - 1)  # 0..pi
+            x = int(round(cx - rx * math.cos(theta)))
+            y = int(round(ground_y - ry * math.sin(theta)))
+            if 0 <= y < ground_y - 1 and 0 <= x < w:
+                safe_addstr(stdscr, y, x, "█", attr)
 
 
 def draw_sun(stdscr, w, t, color):
@@ -173,30 +225,70 @@ def draw_sun(stdscr, w, t, color):
 def main(stdscr):
     curses.curs_set(0)
     curses.start_color()
-    try:
-        curses.use_default_colors()
-        bg = -1
-    except curses.error:
-        bg = curses.COLOR_BLACK
-    def _pair(idx, fg, fallback):
-        try:
-            curses.init_pair(idx, fg, bg)
-        except curses.error:
-            curses.init_pair(idx, fallback, bg)
+    has_256 = curses.COLORS >= 256
 
-    _pair(1, 197, curses.COLOR_RED)       # heart red-pink
-    _pair(2, 231, curses.COLOR_WHITE)     # cow white
-    _pair(3, 84,  curses.COLOR_GREEN)     # grass
-    _pair(4, 200, curses.COLOR_MAGENTA)   # banner hot pink
-    _pair(5, 220, curses.COLOR_YELLOW)    # sun
-    _pair(6, 117, curses.COLOR_CYAN)      # sky/clouds
+    # Baked palette. fg/bg explicit so colours are guaranteed.
+    if has_256:
+        SKY_BG     = 117  # light blue
+        GRASS_BG   = 22   # dark grass green
+        GRASS_FG   = 120  # bright grass blade
+        CLOUD_FG   = 231  # white
+        SUN_FG     = 226  # bright yellow
+        COW_WHITE  = 231  # cow ink (line art)
+        COW_BLACK  = 16   # cow patch chars
+        HEART_FG   = 197  # hot pink
+        BANNER_FG  = 200  # hot pink
+    else:
+        SKY_BG     = curses.COLOR_BLUE
+        GRASS_BG   = curses.COLOR_GREEN
+        GRASS_FG   = curses.COLOR_GREEN
+        CLOUD_FG   = curses.COLOR_WHITE
+        SUN_FG     = curses.COLOR_YELLOW
+        COW_WHITE  = curses.COLOR_WHITE
+        COW_BLACK  = curses.COLOR_BLACK
+        HEART_FG   = curses.COLOR_RED
+        BANNER_FG  = curses.COLOR_MAGENTA
 
-    HEART = curses.color_pair(1)
-    COW = curses.color_pair(2)
-    GRASS = curses.color_pair(3)
-    BANNER_C = curses.color_pair(4)
-    SUN = curses.color_pair(5)
-    SKY = curses.color_pair(6)
+    # Pairs: (fg, bg).
+    curses.init_pair(1,  HEART_FG,   SKY_BG)     # heart in sky
+    curses.init_pair(2,  GRASS_FG,   GRASS_BG)   # grass blades
+    curses.init_pair(3,  BANNER_FG,  SKY_BG)     # banner letter
+    curses.init_pair(4,  SUN_FG,     SKY_BG)     # sun
+    curses.init_pair(5,  CLOUD_FG,   SKY_BG)     # cloud + sky fill
+    curses.init_pair(6,  HEART_FG,   GRASS_BG)   # heart over grass
+    curses.init_pair(7,  COW_WHITE,  GRASS_BG)   # white cow line-art ink
+    curses.init_pair(8,  COW_BLACK,  GRASS_BG)   # black patch chars
+
+    # Rainbow palette for the banner (and arc).
+    if has_256:
+        RAINBOW_FG = [196, 208, 226, 46, 51, 21, 201]
+    else:
+        RAINBOW_FG = [
+            curses.COLOR_RED,
+            curses.COLOR_YELLOW,
+            curses.COLOR_GREEN,
+            curses.COLOR_CYAN,
+            curses.COLOR_BLUE,
+            curses.COLOR_MAGENTA,
+        ]
+    RAINBOW_BASE = 20
+    for i, fg in enumerate(RAINBOW_FG):
+        curses.init_pair(RAINBOW_BASE + i, fg, SKY_BG)
+    RAINBOW_ATTRS = [
+        curses.color_pair(RAINBOW_BASE + i) | curses.A_BOLD
+        for i in range(len(RAINBOW_FG))
+    ]
+
+    HEART_SKY  = curses.color_pair(1)
+    GRASS      = curses.color_pair(2)
+    SUN        = curses.color_pair(4)
+    SKY        = curses.color_pair(5)
+    HEART_GND  = curses.color_pair(6)
+    COW_PALETTE = {
+        "ink":   curses.color_pair(7) | curses.A_BOLD,
+        "patch": curses.color_pair(8) | curses.A_BOLD,
+        "eye":   curses.color_pair(6) | curses.A_BOLD,
+    }
 
     stdscr.nodelay(True)
     stdscr.timeout(40)
@@ -213,19 +305,27 @@ def main(stdscr):
         h, w = stdscr.getmaxyx()
         t = time.time() - t0
 
-        if h < 18 or w < 50:
-            msg = "terminal too small (need >=50x18)"
-            safe_addstr(stdscr, h // 2, max(0, (w - len(msg)) // 2), msg, COW)
+        if h < 22 or w < 60:
+            msg = "terminal too small (need >=60x22)"
+            safe_addstr(stdscr, h // 2, max(0, (w - len(msg)) // 2), msg, GRASS)
             stdscr.refresh()
             continue
 
-        draw_sun(stdscr, w, t, SUN)
+        cow_h = COW_HEIGHT
+        ground_y = h - cow_h - 2
+
+        # Bake the regions: blue sky above, green ground below.
+        paint_region(stdscr, 0, ground_y, w, SKY)
+        paint_region(stdscr, ground_y, h, w, GRASS)
+
         draw_clouds(stdscr, w, t, SKY)
-        draw_banner(stdscr, w, t, BANNER_C)
+        draw_sun(stdscr, w, t, SUN)
+        draw_rainbow_arc(stdscr, w, ground_y, RAINBOW_ATTRS)
+        draw_banner(stdscr, w, t, RAINBOW_ATTRS)
 
         # Kiss cycle: cows lean in, kiss, lean back.
         cycle = (math.sin(t * 1.1) + 1) / 2  # 0..1
-        max_gap = 10
+        max_gap = 8
         min_gap = 0
         cow_gap = int(round(max_gap - (max_gap - min_gap) * cycle))
         kissing = cycle > 0.88
@@ -233,22 +333,16 @@ def main(stdscr):
         bob_l = 1 if int(t * 5) % 2 == 0 else 0
         bob_r = 1 if int(t * 5 + 1) % 2 == 0 else 0
 
-        cow_h = len(LEFT_COW)
-        # Face columns within each cow (where the inner edge of the face sits).
-        left_face_col = 10   # rightmost column of left cow's face
-        right_face_col = 10  # leftmost column of right cow's face
         centre_x = w // 2
-        ground_y = h - cow_h - 2
-
         left_face_x = centre_x - cow_gap // 2 - 1
         right_face_x = centre_x + (cow_gap - cow_gap // 2)
-        left_x = left_face_x - left_face_col
-        right_x = right_face_x - right_face_col
+        left_x = left_face_x - LEFT_COW_FACE_COL
+        right_x = right_face_x - RIGHT_COW_FACE_COL
 
-        draw_cow(stdscr, LEFT_COW, left_x, ground_y + bob_l, t, COW, HEART)
-        draw_cow(stdscr, RIGHT_COW, right_x, ground_y + bob_r, t, COW, HEART)
+        draw_cow(stdscr, LEFT_COW, left_x, ground_y + bob_l, t, COW_PALETTE)
+        draw_cow(stdscr, RIGHT_COW, right_x, ground_y + bob_r, t, COW_PALETTE)
 
-        # Smooch: spawn hearts in the gap during kiss
+        # Smooch: spawn hearts in the gap during kiss.
         if kissing:
             if len(hearts) < 14 and random.random() < 0.55:
                 hearts.append(
@@ -259,15 +353,8 @@ def main(stdscr):
                         random.uniform(-0.25, 0.25),
                     ]
                 )
-            # big kiss heart between snouts
-            big = "❤"
-            safe_addstr(
-                stdscr,
-                ground_y + 1,
-                centre_x,
-                big,
-                HEART | curses.A_BOLD | curses.A_REVERSE,
-            )
+            big_attr = HEART_GND | curses.A_BOLD
+            safe_addstr(stdscr, ground_y + 1, centre_x, "❤", big_attr)
 
         new_hearts = []
         for hx, hy, age, drift in hearts:
@@ -277,12 +364,13 @@ def main(stdscr):
             if age >= 28 or hy < 1:
                 continue
             ch_pulse = KISS_HEARTS[(age // 2) % len(KISS_HEARTS)]
-            attr = HEART | (curses.A_BOLD if age % 4 < 2 else 0)
+            pair = HEART_SKY if int(hy) < ground_y else HEART_GND
+            attr = pair | (curses.A_BOLD if age % 4 < 2 else 0)
             safe_addstr(stdscr, int(hy), int(hx), ch_pulse, attr)
             new_hearts.append([hx, hy, age, drift])
         hearts = new_hearts
 
-        draw_grass(stdscr, w, h, GRASS)
+        draw_grass(stdscr, w, h, ground_y, GRASS)
 
         hint = "press q to quit  -  cowsinlove.com"
         safe_addstr(stdscr, h - 1, max(0, w - len(hint) - 1), hint, GRASS | curses.A_DIM)

@@ -1,0 +1,17 @@
+# cowsinlove.com SSH TUI
+
+default:
+    @just --list
+
+# Install local toolchain (uv + flyctl) if missing.
+install:
+    @command -v uv >/dev/null 2>&1 || curl -LsSf https://astral.sh/uv/install.sh | sh
+    @command -v fly >/dev/null 2>&1 || curl -L https://fly.io/install.sh | sh
+
+# Run the TUI locally.
+run:
+    uv run --script main.py
+
+# Build & deploy to Fly.io (app: cowsinlove).
+deploy:
+    fly deploy
