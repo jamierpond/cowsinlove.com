@@ -109,23 +109,21 @@ def safe_addstr(stdscr, y, x, text, attr=0):
         pass
 
 
-def draw_banner(stdscr, screen_w, t, rainbow_attrs):
+def draw_banner(stdscr, screen_w, t, color):
     amp = 1
     if BANNER_WIDTH + 2 > screen_w:
         title = _BANNER_TEXT
         x = max(0, (screen_w - len(title)) // 2)
-        safe_addstr(stdscr, 1, x, title, rainbow_attrs[0])
+        safe_addstr(stdscr, 1, x, title, color | curses.A_BOLD)
         return
     start_x = (screen_w - BANNER_WIDTH) // 2
-    base_y = 1 + amp
+    base_y = 1 + amp  # leave headroom for upward wiggle
     cursor_x = start_x
-    n_colors = len(rainbow_attrs)
     for li, glyph in enumerate(LETTERS):
+        # comic-sans wiggle: per-letter staggered phase, mostly y, tiny x sway
         phase = li * 0.9 + t * 3.6
         dy = int(round(math.sin(phase) * amp))
-        dx = int(round(math.cos(phase * 0.5) * 0.6))
-        # rainbow cycles through letters and time
-        attr = rainbow_attrs[(li + int(t * 3)) % n_colors]
+        dx = int(round(math.cos(phase * 0.5) * 0.6))  # subtle horizontal drift
         for r, line in enumerate(glyph):
             for c, ch in enumerate(line):
                 if ch == " ":
@@ -134,8 +132,8 @@ def draw_banner(stdscr, screen_w, t, rainbow_attrs):
                     stdscr,
                     base_y + r + dy,
                     cursor_x + c + dx,
-                    "█",
-                    attr,
+                    ch,
+                    color | curses.A_BOLD,
                 )
         cursor_x += LETTER_WIDTHS[li] + LETTER_SPACING
 
@@ -187,29 +185,6 @@ def draw_clouds(stdscr, w, t, color):
         safe_addstr(stdscr, cloud_y, x, CLOUD, color | curses.A_BOLD)
 
 
-def draw_rainbow_arc(stdscr, w, ground_y, rainbow_attrs):
-    """Half-arc rainbow arching across the sky, anchored to the ground."""
-    # Arc geometry — large radius so the arc is gentle.
-    cx = w // 2
-    radius_x = max(20, w // 3)
-    radius_y = max(8, ground_y - 4)
-    if radius_y < 6:
-        return
-    # Draw n concentric arcs, one per rainbow band.
-    samples = max(80, w * 2)
-    for band, attr in enumerate(rainbow_attrs):
-        rx = radius_x - band
-        ry = radius_y - band
-        if rx <= 0 or ry <= 0:
-            continue
-        for s in range(samples):
-            theta = math.pi * s / (samples - 1)  # 0..pi
-            x = int(round(cx - rx * math.cos(theta)))
-            y = int(round(ground_y - ry * math.sin(theta)))
-            if 0 <= y < ground_y - 1 and 0 <= x < w:
-                safe_addstr(stdscr, y, x, "█", attr)
-
-
 def draw_sun(stdscr, w, t, color):
     cx = w - 8
     if cx < 10:
@@ -259,28 +234,9 @@ def main(stdscr):
     curses.init_pair(7,  COW_WHITE,  GRASS_BG)   # white cow line-art ink
     curses.init_pair(8,  COW_BLACK,  GRASS_BG)   # black patch chars
 
-    # Rainbow palette for the banner (and arc).
-    if has_256:
-        RAINBOW_FG = [196, 208, 226, 46, 51, 21, 201]
-    else:
-        RAINBOW_FG = [
-            curses.COLOR_RED,
-            curses.COLOR_YELLOW,
-            curses.COLOR_GREEN,
-            curses.COLOR_CYAN,
-            curses.COLOR_BLUE,
-            curses.COLOR_MAGENTA,
-        ]
-    RAINBOW_BASE = 20
-    for i, fg in enumerate(RAINBOW_FG):
-        curses.init_pair(RAINBOW_BASE + i, fg, SKY_BG)
-    RAINBOW_ATTRS = [
-        curses.color_pair(RAINBOW_BASE + i) | curses.A_BOLD
-        for i in range(len(RAINBOW_FG))
-    ]
-
     HEART_SKY  = curses.color_pair(1)
     GRASS      = curses.color_pair(2)
+    BANNER_C   = curses.color_pair(3)
     SUN        = curses.color_pair(4)
     SKY        = curses.color_pair(5)
     HEART_GND  = curses.color_pair(6)
@@ -320,8 +276,7 @@ def main(stdscr):
 
         draw_clouds(stdscr, w, t, SKY)
         draw_sun(stdscr, w, t, SUN)
-        draw_rainbow_arc(stdscr, w, ground_y, RAINBOW_ATTRS)
-        draw_banner(stdscr, w, t, RAINBOW_ATTRS)
+        draw_banner(stdscr, w, t, BANNER_C)
 
         # Kiss cycle: cows lean in, kiss, lean back.
         cycle = (math.sin(t * 1.1) + 1) / 2  # 0..1

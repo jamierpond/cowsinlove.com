@@ -131,6 +131,13 @@ async def _handle(process: asyncssh.SSHServerProcess):
     forward = asyncio.create_task(_ssh_to_pty())
     rc = await proc.wait()
     forward.cancel()
+    # Drain any final pty output (curses' terminal-restore escape codes)
+    # before tearing down the channel, otherwise the client's terminal is
+    # left mid-redraw and needs a stray keypress to recover.
+    try:
+        await asyncio.wait_for(done.wait(), timeout=1.0)
+    except asyncio.TimeoutError:
+        pass
     try:
         loop.remove_reader(master_fd)
     except Exception:
@@ -138,6 +145,10 @@ async def _handle(process: asyncssh.SSHServerProcess):
     try:
         os.close(master_fd)
     except OSError:
+        pass
+    try:
+        await process.stdout.drain()
+    except Exception:
         pass
     process.exit(rc if rc is not None else 0)
 
