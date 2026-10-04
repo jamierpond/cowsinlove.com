@@ -1,10 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Comic_Neue } from 'next/font/google';
-import { GoogleAnalytics } from '@next/third-parties/google';
+import Script from 'next/script';
 import "./globals.css";
-
-const gaId = process.env.NEXT_PUBLIC_GA_ID;
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -39,7 +37,17 @@ export default function RootLayout({
       >
         {children}
       </body>
-      {gaId && <GoogleAnalytics gaId={gaId} />}
+      <Script
+        async
+        src="https://www.googletagmanager.com/gtag/js?id=G-CXH20JTBJX"
+        strategy="afterInteractive"
+      />
+      <Script id="gtag" strategy="afterInteractive">{`
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-CXH20JTBJX');
+      `}</Script>
     </html>
   );
 }
