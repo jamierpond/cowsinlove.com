@@ -19,6 +19,10 @@ export default function Privacy() {
         <li>Everything the game needs runs on your device, and nothing is sent anywhere.</li>
       </ul>
       <p>
+        This website uses Google Analytics to count visits. The game itself still
+        collects nothing.
+      </p>
+      <p>
         The store you downloaded it from (the App Store, Google Play, Steam or the
         Microsoft Store) may collect data under its own privacy policy; that is
         between you and the store.
