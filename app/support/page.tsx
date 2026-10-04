@@ -34,8 +34,10 @@ export default function Support() {
 
       <h2>Contact</h2>
       <p>
-        Stuck, found a bug, or just want to say moo?{' '}
-        <a href="mailto:jamiepond259@gmail.com">jamiepond259@gmail.com</a>
+        Stuck, found a bug, or just want to say moo? Open an issue at{' '}
+        <a href="https://github.com/jamierpond/cowsinlove.com/issues">
+          github.com/jamierpond/cowsinlove.com/issues
+        </a>
       </p>
     </InfoPage>
   );

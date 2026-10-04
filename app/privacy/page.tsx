@@ -24,8 +24,10 @@ export default function Privacy() {
         between you and the store.
       </p>
       <p>
-        Questions:{' '}
-        <a href="mailto:jamiepond259@gmail.com">jamiepond259@gmail.com</a>
+        Questions: open an issue at{' '}
+        <a href="https://github.com/jamierpond/cowsinlove.com/issues">
+          github.com/jamierpond/cowsinlove.com/issues
+        </a>
       </p>
     </InfoPage>
   );
