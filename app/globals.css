@@ -275,3 +275,120 @@ body {
   font-style: italic;
   opacity: 0.7;
 }
+
+.game-card {
+  max-width: 64rem;
+}
+
+.game-hero {
+  text-align: center;
+}
+
+.game-capsule {
+  width: 100%;
+  max-width: 40rem;
+  height: auto;
+  margin: 1rem auto 0;
+  border-radius: 1rem;
+  box-shadow: 0 0 30px rgba(255, 105, 180, 0.5);
+}
+
+.game-tagline {
+  font-size: 1.25rem;
+  max-width: 36rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.game-stores {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+  margin: 1.5rem 0 0.5rem;
+}
+
+.game-store {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 9rem;
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  background: #ff1493;
+  color: #ffffff;
+  font-weight: 700;
+  line-height: 1.2;
+  box-shadow: 0 4px 0 #c2106f;
+}
+
+.info-card a.game-store {
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.game-store-soon {
+  background: #ffffff;
+  color: #ff69b4;
+  border: 2px dashed #ff69b4;
+  box-shadow: none;
+  cursor: default;
+}
+
+.game-store-note {
+  font-size: 0.8rem;
+  font-weight: 400;
+}
+
+.game-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 18rem), 1fr));
+  gap: 1rem;
+}
+
+.game-gallery figure {
+  margin: 0;
+}
+
+.game-gallery img {
+  width: 100%;
+  height: auto;
+  border-radius: 0.75rem;
+  box-shadow: 0 0 20px rgba(255, 105, 180, 0.35);
+}
+
+.game-gallery figcaption {
+  text-align: center;
+  font-weight: 700;
+  color: #ff1493;
+  margin-top: 0.4rem;
+}
+
+.game-howto {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+  gap: 0.75rem;
+  list-style: none;
+  padding: 0;
+}
+
+.game-howto li {
+  background: #ffe4ec;
+  border-radius: 1rem;
+  padding: 1rem;
+  text-align: center;
+  font-weight: 700;
+}
+
+.game-howto-emoji {
+  display: block;
+  font-size: 2rem;
+}
+
+.game-promise {
+  text-align: center;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #ff1493;
+  margin-top: 2rem !important;
+}
