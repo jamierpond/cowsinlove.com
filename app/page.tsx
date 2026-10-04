@@ -5,6 +5,7 @@ import Cows from '../public/cows.jpg';
 import VideoFrame from '../public/frame.jpg';
 import { SITE_TITLE, COLORS, FONT_FAMILY, IMAGE_PREVIEW } from '@/lib/constants';
 import InteractiveContent from './interactive-content';
+import Footer from './footer';
 
 export default function Home() {
   const [isVideoReady, setIsVideoReady] = useState(false);
@@ -82,6 +83,7 @@ export default function Home() {
 
         <InteractiveContent />
       </div>
+      <Footer overlay />
     </main>
   );
 }
